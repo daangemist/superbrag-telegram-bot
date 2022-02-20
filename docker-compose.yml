@@ -8,4 +8,4 @@ services:
     ports:
       - 3005:3000
     working_dir: /app
-    command: ./node_modules/.bin/nodemon -e ts,json --exec "npm start"
+    command: "npm run watch"

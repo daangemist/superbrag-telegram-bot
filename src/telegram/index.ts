@@ -42,36 +42,40 @@ function getClient(): TelegramClient {
 }
 
 async function listen() {
-  do {
-    const updates = await getClient().getUpdates({
-      allowedUpdates: ['message'],
-      offset: typeof lastUpdate === 'undefined' ? undefined : lastUpdate + 1,
-      limit: 1,
-    });
+  try {
+    do {
+      const updates = await getClient().getUpdates({
+        allowedUpdates: ['message'],
+        offset: typeof lastUpdate === 'undefined' ? undefined : lastUpdate + 1,
+        limit: 1,
+      });
 
-    // Display the information
-    await Promise.all(
-      updates.map((update) => {
-        console.log(`Incoming update ${update.updateId}.`);
-        lastUpdate = update.updateId;
+      // Display the information
+      await Promise.all(
+        updates.map((update) => {
+          console.log(`Incoming update ${update.updateId}.`);
+          lastUpdate = update.updateId;
 
-        if (!adminChatId) {
-          const { message } = update;
-          if (!message) {
-            return Promise.resolve; // Skip it.
+          if (!adminChatId) {
+            const { message } = update;
+            if (!message) {
+              return Promise.resolve; // Skip it.
+            }
+            console.log(
+              `Incoming message "${message.text}" from ${message.from?.firstName}`
+            );
+            console.log(
+              `The telegramChatId to configure is ***${message.chat.id}***`
+            );
+            return Promise.resolve;
+          } else {
+            return processUpdate(getClient(), update);
           }
-          console.log(
-            `Incoming message "${message.text}" from ${message.from?.firstName}`
-          );
-          console.log(
-            `The telegramChatId to configure is ***${message.chat.id}***`
-          );
-          return Promise.resolve;
-        } else {
-          return processUpdate(getClient(), update);
-        }
-      })
-    );
-    await delay(500);
-  } while (true);
+        })
+      );
+      await delay(500);
+    } while (true);
+  } catch (error) {
+    console.log('Error occurred while retrieving Telegram updates:', error);
+  }
 }

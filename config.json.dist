@@ -1,0 +1,7 @@
+{
+  "accessPassword": "",
+  "superbragPrefix": "",
+  "telegramBotToken": "",
+  "telegramChatId": "",
+  "cronExpression": "1 11 * * *"
+}

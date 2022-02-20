@@ -5,8 +5,9 @@
   "description": "A telegram bot for posting and reminders to post messages to your superbrag instance.",
   "main": "src/index.ts",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node build/index.js",
+    "build": "tsc",
+    "watch": "tsc-watch --onSuccess \"node build/index.js\""
   },
   "repository": {
     "type": "git",
@@ -43,20 +44,21 @@
     ]
   },
   "dependencies": {
-    "@types/node-cron": "^3.0.1",
     "axios": "^0.25.0",
     "messaging-api-telegram": "^1.1.0",
-    "node-cron": "^3.0.0",
-    "ts-node": "^10.5",
-    "typescript": "^4.4"
+    "node-cron": "^3.0.0"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.2",
+    "@types/node": "^16.11.24",
+    "@types/node-cron": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.2",
     "@typescript-eslint/parser": "^5.2",
     "eslint": "^8.1",
     "eslint-plugin-unicorn": "^37.0",
     "nodemon": "^2.0.15",
-    "prettier": "^2.4"
+    "prettier": "^2.4",
+    "tsc-watch": "^4.6.0",
+    "typescript": "^4.4"
   }
 }

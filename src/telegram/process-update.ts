@@ -1,41 +1,50 @@
-import { TelegramClient } from 'messaging-api-telegram';
-import { Update } from 'messaging-api-telegram/dist/TelegramTypes';
+import { IncomingMessage, OutgoingMessage } from '@manny-talk/manny-talk';
+import { getMannyTalk } from '.';
 import { getConfig } from '../config';
 import post from '../superbrag';
 
 export default async function (
-  telegram: TelegramClient,
-  update: Update
-): Promise<void> {
+  message: IncomingMessage
+): Promise<OutgoingMessage> {
   const adminChatId = getConfig().telegramChatId as unknown as number;
 
   // weak comparison here, because we don't know if it's int or string.
-  if (update.message?.chat.id != adminChatId) {
+  if (message.profileId !== `${adminChatId}`) {
     console.log(
-      `Not allowed telegramChatId ${update.message?.chat.id} used to post message. Ignoring it.`
+      `Not allowed telegramChatId ${message.profileId} used to post message. Ignoring it.`
     );
-    return;
-  }
-  if (!update.message.text) {
-    await telegram.sendMessage(
-      adminChatId,
-      'The body text is empty, cannot create new post.'
-    );
-    return;
+
+    return {
+      messages: [
+        'Please complete the configuration. Check the console output of the running process for the needed information.',
+      ],
+      sessionId: message.sessionId,
+      profileId: message.profileId,
+    };
   }
 
-  await telegram.sendMessage(adminChatId, 'Thanks, posting message right now.');
+  getMannyTalk().speak('telegram', {
+    messages: ['Thanks, posting message right now.'],
+    profileId: message.profileId,
+    sessionId: message.sessionId,
+  });
+
   try {
-    await post(update.message?.text);
-    await telegram.sendMessage(
-      adminChatId,
-      'It has been posted! Enjoy your day! 🚀'
-    );
+    await post(message.message);
+    return {
+      messages: ['It has been posted! Enjoy your day! 🚀'],
+      sessionId: message.sessionId,
+      profileId: message.profileId,
+    };
   } catch (error) {
-    await telegram.sendMessage(
-      adminChatId,
-      // @ts-expect-error Errors are marked as unknown.
-      `Posting the message failed: ${error.message}`
-    );
+    return {
+      messages: [
+        `Posting the message failed: ${
+          error instanceof Error ? error.message : error
+        }`,
+      ],
+      sessionId: message.sessionId,
+      profileId: message.profileId,
+    };
   }
 }

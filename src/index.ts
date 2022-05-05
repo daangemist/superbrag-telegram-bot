@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { getConfig, loadConfig } from './config';
-import startTelegram, { sendMessage } from './telegram';
+import { sendMessage, initialize as initializeTelegram } from './telegram';
 
 async function main() {
   await loadConfig();
@@ -16,9 +16,9 @@ async function main() {
     console.log('Waiting for incoming message to post...');
   }
 
-  startTelegram();
+  initializeTelegram();
 
-  if (config.cronExpression) {
+  if (config.cronExpression && config.telegramChatId) {
     console.log('Scheduling cron task for the reminder.');
     cron.schedule(config.cronExpression, async () => {
       await sendMessage(

@@ -16,6 +16,7 @@ First, use the BotFather in Telegram to create a bot and retrieve a token.
     git clone git@github.com:daangemist/superbrag-telegram-bot.git
     cd superbrag-telegram-bot
     cp config.json.dist config.json
+    npm ci
     npm run build
 
 ## Configure
